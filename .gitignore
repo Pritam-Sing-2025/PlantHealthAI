@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+
+# macOS system files
+.DS_Store
+
+# React / Node
+node_modules/
+
+# VS Code
+.vscode/
+
+# ML model files
+*.h5
+*.bin
+
+# Datasets
+Dataset/

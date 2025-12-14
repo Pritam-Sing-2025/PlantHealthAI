@@ -70,7 +70,7 @@ def parse_args():
     parser.add_argument(
         "image",
         nargs="?",
-        default=os.path.join(projectRoot, "TestImg", "tomato_diseased(septoriaLeafSpot).jpeg"),
+        default=os.path.join(projectRoot, "TestImg", "potatoDiseased.JPG"),
         help="Path to the image file."
     )
     parser.add_argument(
@@ -94,11 +94,47 @@ def main():
         )
     x = loadAndPreprocess(args.image)
     preds = model.predict(x)
+    
+   # AUTO-GROUP CLASSES BY CROP (SCALABLE)
+    crop_groups = {}
+    # Build crop groups from class labels
+    for idx, cls in enumerate(class_labels):
+        crop = cls.split("_")[0].lower()  # first segment = crop
+        crop_groups.setdefault(crop, []).append(idx)
+    # Compute crop scores
+    crop_scores = {
+        crop: sum(preds[0][i] for i in idx_list)
+        for crop, idx_list in crop_groups.items()
+    }  
+    # Determine dominant crop
+    dominant_crop = max(crop_scores, key=crop_scores.get)
+    # Pick highest probability class WITHIN that crop
+    selected = [(class_labels[i], float(preds[0][i])) for i in crop_groups[dominant_crop]]
+    selected.sort(key=lambda x: x[1], reverse=True)
+    bestName, bestProb = selected[0]
+
     results = topNPreds(preds, class_labels, n=args.topNPreds) # sorts topN results
     bestName, bestProb = results[0] 
+
+    # --- Auto determine crop type by grouping predictions ---
+    potato_classes = [i for i, name in enumerate(class_labels) if "potato" in name.lower()]
+    tomato_classes = [i for i, name in enumerate(class_labels) if "tomato" in name.lower()]
+    potato_score = sum(preds[0][i] for i in potato_classes)
+    tomato_score = sum(preds[0][i] for i in tomato_classes)
+    if potato_score > tomato_score:
+    # pick best potato disease
+        potato_preds = [(class_labels[i], float(preds[0][i])) for i in potato_classes]
+        potato_preds.sort(key=lambda x: x[1], reverse=True)
+        bestName, bestProb = potato_preds[0]
+    else:
+        # pick best tomato disease
+        tomato_preds = [(class_labels[i], float(preds[0][i])) for i in tomato_classes]
+        tomato_preds.sort(key=lambda x: x[1], reverse=True)
+        bestName, bestProb = tomato_preds[0]
+
     # only if result is diseased then go for seriousness
-    # if healthy word not in bestName (i.e. label)
-    if "healthy" in bestName.lower():
+    # if healthy word not in bestName (i.e. in label)
+    if "healthy" in bestName.lower() or bestProb < 0.50:
         health_status = "Healthy"
         damage_percent = 0
         seriousness = "None"

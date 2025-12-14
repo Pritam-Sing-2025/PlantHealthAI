@@ -1,0 +1,56 @@
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f6f6f6;
+}
+
+.container {
+  text-align: center;
+  padding: 30px;
+}
+
+.title {
+  margin-bottom: 20px;
+}
+
+.predict-btn {
+  background: #2ecc71;
+  padding: 12px 25px;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.preview-img {
+  margin-top: 20px;
+  width: 300px;
+  border-radius: 10px;
+  border: 2px solid #ddd;
+}
+
+.navbar {
+  background: #2ecc71;
+  padding: 20px;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+
+.footer {
+  margin-top: 40px;
+  padding: 20px;
+  background: #eee;
+  text-align: center;
+}
+
+.result-card {
+  padding: 20px;
+  width: 350px;
+  background: white;
+  margin: 20px auto;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}

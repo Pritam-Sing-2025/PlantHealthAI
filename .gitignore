@@ -21,5 +21,3 @@ node_modules/
 *.h5
 *.bin
 
-# Datasets
-Dataset/

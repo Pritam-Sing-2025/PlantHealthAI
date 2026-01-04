@@ -17,7 +17,7 @@ function Home() {
 
   const handlePredict = async () => {
     if (!image) {
-      alert("Please select an image!");
+      alert("Upload an image first");
       return;
     }
 
@@ -28,31 +28,34 @@ function Home() {
     setResult(null);
 
     try {
-      const res = await axios.post("http://localhost:8080/predict", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await axios.post(
+        "http://127.0.0.1:8000/predict",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
-      console.log("Response:", res.data);
+      // ✅ THIS IS THE IMPORTANT LINE
       setResult(res.data);
     } catch (err) {
-      console.error("Backend Error:", err);
-      alert("Error connecting to backend.");
+      alert("Error connecting to backend");
     }
 
     setLoading(false);
   };
 
   return (
-    <div className="container">
-      <h1 className="title">🌱 PlantHealthAI</h1>
+    <div style={{ textAlign: "center", padding: "40px" }}>
+      <h1>🌱 Plant Health AI</h1>
 
       <ImageUpload onUpload={handleUpload} preview={preview} />
 
-      <button className="predict-btn" onClick={handlePredict}>
-        Predict Disease
+      <button onClick={handlePredict} style={{ marginTop: "20px" }}>
+        Predict
       </button>
 
       {loading && <Loader />}
+
+      {/* ✅ ONLY render when data exists */}
       {result && <PredictionResult data={result} />}
     </div>
   );
